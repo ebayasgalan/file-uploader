@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+require('dotenv').config();
+
 const photoRoute = require('./Routes/photo.controller');
 
 app.use(express.json());
