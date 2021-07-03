@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Photo from './Photo';
+import PhotoItem from './PhotoItem';
 
 const Photos = () => {
   const [photos, setPhotos] = useState([]);
@@ -8,11 +8,12 @@ const Photos = () => {
     axios.get('/photo')
       .then(({data}) => {
         // need to assign to state 
-        // console.log('data: ', data);
+        console.log('data: ', data);
+        setPhotos(data);
       })
-  },[photos])
-  return (photos.map(photo => {
-    return <Photo name={photo.name} />
+  },[])
+  return (photos.map((photo, i) => {
+    return <PhotoItem key={i} url={photo.url} />
   }));
 }
 

@@ -1,4 +1,4 @@
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
 const fs = require('fs');
 
 const bucketName = process.env.AWS_BUCKET_NAME;
@@ -27,6 +27,18 @@ function uploadFile(file) {
   return s3.send(command)
 }
 
-module.exports.uploadFile = uploadFile
-
 // download a file from s3 
+
+function getFileStream(Key) {
+  const downloadParams = {
+    Key,
+    Bucket: bucketName
+  }
+  const command = new GetObjectCommand(downloadParams);
+  return s3.send(command);
+}
+
+module.exports = {
+  uploadFile,
+  getFileStream
+}
