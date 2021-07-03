@@ -1,11 +1,14 @@
-const { createCipher } = require('crypto');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const multers3 = require('multer');
 const path = require('path');
 
+const { Photo } = require('../Models/photo.js')
+const {uploadFile, getFileStream} = require('../s3');
+
 const storage = multer.diskStorage({
-  destination: './uploads',
+  destination: './public/uploads',
   filename: function(req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
@@ -31,30 +34,57 @@ const upload = multer({
   limits: { fileSize: 1000000 },
   fileFilter: (req, file, cb) => {
     checkFileType(file, cb);
-  }}).single('image');
+  }});
 
-const { Photo } = require('../Models/photo.js')
-
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
+  const samplePhotos = ['https://hack-reactor-images.s3.us-west-1.amazonaws.com/people/person-0.jpg', '../uploads/image-1625338950195.png'];
   try {
-    // const photos = await Photo.find();
-    res.status(200).send('photos');
+    const photos = await Photo.find();
+    res.status(200).send(photos);
+    next()
   } catch(err) {
     res.status(400).send(err);
   }
 });
 
-const {uploadFile} = require('../s3');
-
-router.post('/', upload, async (req, res) => {
-  const file = req.file
+router.get('/:key', async (req, res) => {
+  const { key } = req.params;
+  const readStream = getFileStream(key);
+  console.log('key: ', readStream);
+  // readStream.pipe(key);
   try {
-    const result = await uploadFile(file);
-    console.log('result from upload request: ', result);
-    res.send('👌');
+    res.send(readStream)
+  } catch (err) {
+    console.log('err: ', err);
+  }
+});
+
+router.post('/', upload.single('image'), async (req, res) => {
+  const file = req.file;
+  const newPhoto = new Photo({
+    url: `uploads/${file.filename}`,
+    name: req.body.name,
+    description: req.body.description,
+    favorite: req.body.favorite
+  })
+  try {
+    await newPhoto.save();
+    // const result = await uploadFile(file);
+    // console.log('result from upload request: ', result);
+    res.send('file saved to MongoDB');
   } catch(err) {
     console.log('error: ', err);
   }
 });
+
+router.delete('/:id', async (req, res) => {
+  const {id} = req.params;
+  try {
+    const deleted = await Photo.findByIdAndDelete(id);
+    res.status(200).send('deleted!');
+  } catch(err) {
+    console.log('err: ', err);
+  }
+})
 
 module.exports = router;

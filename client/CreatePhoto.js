@@ -40,6 +40,7 @@ const CreatePhoto = () => {
   }
 
   return (
+    <>
     <form onSubmit={e => {
       e.preventDefault();
       fileUpload(e);
@@ -47,7 +48,7 @@ const CreatePhoto = () => {
       <h1>Welcome to photos app!</h1>
       <p>you can upload your photos and select your favorite one</p>
       <label htmlFor="name">Name:
-        <input required type="text" name='name' id="name" onChange={handleChange} />
+        <input type="text" name='name' id="name" onChange={handleChange} />
       </label>
       <label htmlFor="description">Description: 
         <textarea name='description' onChange={handleChange} />
@@ -64,6 +65,7 @@ const CreatePhoto = () => {
       </label>
       <button type="submit">Submit</button>
     </form>
+    </>
   )
 };
 

@@ -19,7 +19,6 @@ const db = mongoose.connection;
 
 db.on('error', () => { console.log('Error connecting to mongoDB'); });
 
-
 module.exports = {
   Photo
 }
