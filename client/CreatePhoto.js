@@ -28,15 +28,10 @@ const CreatePhoto = () => {
     formData.append('name', name);
     formData.append('description', description);
     formData.append('favorite', favorite);
-    axios({
-      url: '/photo',
-      method: "POST",
-      data: formData
-    }).then(res => {
-      console.log(res.data);
-    }).catch(err => {
-      console.log('error: ', err);
-    });
+    console.log('formData from CreatePhoto: ', formData);
+    axios.post('/photo', formData)
+      .then(res => console.log('res: ', res.data))
+      .catch(err => console.log(err));
   }
 
   return (

@@ -37,7 +37,6 @@ const upload = multer({
   }});
 
 router.get('/', async (req, res, next) => {
-  const samplePhotos = ['https://hack-reactor-images.s3.us-west-1.amazonaws.com/people/person-0.jpg', '../uploads/image-1625338950195.png'];
   try {
     const photos = await Photo.find();
     res.status(200).send(photos);
@@ -47,13 +46,29 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get('/:key', async (req, res) => {
-  const { key } = req.params;
-  const readStream = getFileStream(key);
-  console.log('key: ', readStream);
-  // readStream.pipe(key);
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    res.send(readStream)
+    const photo = await Photo.findById(id);
+    res.status(200).send(photo)
+  } catch (err) {
+    console.log('err: ', err);
+  }
+});
+
+router.patch('/:id', upload.single('image'),async (req, res) => {
+  const { id } = req.params;
+  const updateObject = {
+    url: `uploads/${req.file.filename}`,
+    name: req.body.name,
+    description: req.body.description,
+    favorite: req.body.favorite,
+    updated_at: Date.now()
+  }
+  try {
+    const photo = await Photo.findByIdAndUpdate(id, updateObject);
+    console.log('id: ', id);
+    res.status(200).send('updated!')
   } catch (err) {
     console.log('err: ', err);
   }
@@ -69,8 +84,6 @@ router.post('/', upload.single('image'), async (req, res) => {
   })
   try {
     await newPhoto.save();
-    // const result = await uploadFile(file);
-    // console.log('result from upload request: ', result);
     res.send('file saved to MongoDB');
   } catch(err) {
     console.log('error: ', err);

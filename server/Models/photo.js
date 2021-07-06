@@ -13,7 +13,7 @@ const Photo = mongoose.model('photos', PhotoSchema);
 
 const url = 'mongodb://localhost/photo';
 
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, () => {console.log('mongoDB connected!')});
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }, () => {console.log('mongoDB connected!')});
 
 const db = mongoose.connection;
 
