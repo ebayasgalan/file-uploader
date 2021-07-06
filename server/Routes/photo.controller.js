@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const multers3 = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 const { Photo } = require('../Models/photo.js')
 const {uploadFile, getFileStream} = require('../s3');
@@ -56,7 +57,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.patch('/:id', upload.single('image'),async (req, res) => {
+router.patch('/:id', upload.single('image'), async (req, res) => {
   const { id } = req.params;
   const updateObject = {
     url: `uploads/${req.file.filename}`,
@@ -67,8 +68,14 @@ router.patch('/:id', upload.single('image'),async (req, res) => {
   }
   try {
     const photo = await Photo.findByIdAndUpdate(id, updateObject);
-    console.log('id: ', id);
-    res.status(200).send('updated!')
+    const pathToFile = `public/${req.body.prevPicUrl}`;
+    fs.unlink(path.join(__dirname, '..', '..', pathToFile), (err, data) => {
+      if(err) console.log('error: ', err);
+      else {
+        console.log('updated to DB and deleted from local disk', data);
+      }
+    });
+    res.status(200).send('updated!');
   } catch (err) {
     console.log('err: ', err);
   }
@@ -84,7 +91,7 @@ router.post('/', upload.single('image'), async (req, res) => {
   })
   try {
     await newPhoto.save();
-    res.send('file saved to MongoDB');
+    res.status(201).send('file saved to MongoDB');
   } catch(err) {
     console.log('error: ', err);
   }
@@ -92,11 +99,19 @@ router.post('/', upload.single('image'), async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   const {id} = req.params;
+  // delete old pic from local disk and db
   try {
     const deleted = await Photo.findByIdAndDelete(id);
+    const pathToFile = `public/${deleted.url}`;
+    fs.unlink(path.join(__dirname, '..', '..', pathToFile), (err, data) => {
+      if(err) console.log('error: ', err);
+      else {
+        console.log('deleted from local disk');
+      }
+    });
     res.status(200).send('deleted!');
   } catch(err) {
-    console.log('err: ', err);
+    res.status(400).send(err);
   }
 })
 

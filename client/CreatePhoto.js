@@ -42,21 +42,20 @@ const CreatePhoto = () => {
     }}>
       <h1>Welcome to photos app!</h1>
       <p>you can upload your photos and select your favorite one</p>
-      <label htmlFor="name">Name:
-        <input type="text" name='name' id="name" onChange={handleChange} />
+      <label>Name:
+        <input type="text" name='name' onChange={handleChange} />
       </label>
-      <label htmlFor="description">Description: 
+      <label>Description: 
         <textarea name='description' onChange={handleChange} />
       </label>
-      <label htmlFor="favorite">Favorite:
-        <select type="boolean" name='favorite' id="favorite" onChange={handleChange}>
+      <label>Favorite:
+        <select type="boolean" name='favorite' onChange={handleChange}>
           <option value={true}>yes</option>
           <option value={false}>no</option>
         </select>
       </label>
-      <label htmlFor="photo">
-        {/* implement size checker later  */}
-        <input required type="file" name='photo' id="photo" onChange={handleChange}/>
+      <label>
+        <input required type="file" name='photo' onChange={handleChange}/>
       </label>
       <button type="submit">Submit</button>
     </form>
