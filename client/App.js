@@ -6,13 +6,6 @@ import EditPhoto from './EditPhoto';
 import {Router} from '@reach/router';
 import axios from 'axios';
 
-const HomePage = (props) => (
-  <>
-    <CreatePhoto />
-    <Photos fetchSingle={props.fetchSingle} />
-  </>
-)
-
 const App = () => {
   const [singleData, setSingleData] = useState();
   const fetchSingle = (id) => {
@@ -26,7 +19,8 @@ const App = () => {
 
   return (
     <Router>
-      <HomePage fetchSingle={fetchSingle} path="/" /> 
+      <Photos fetchSingle={fetchSingle} path="/" />
+      <CreatePhoto path="/create" />
       {singleData ? <SinglePhoto pic={singleData} path="single" /> : null}
       <EditPhoto pic={singleData} path="edit" /> 
     </Router>

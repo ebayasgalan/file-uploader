@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import axios from 'axios';
+import {navigate} from '@reach/router';
 
 const CreatePhoto = () => {
   const [name, setName] = useState('');
@@ -30,7 +31,7 @@ const CreatePhoto = () => {
     formData.append('favorite', favorite);
     console.log('formData from CreatePhoto: ', formData);
     axios.post('/photo', formData)
-      .then(res => console.log('res: ', res.data))
+      .then(res => navigate('/'))
       .catch(err => console.log(err));
   }
 
@@ -42,21 +43,20 @@ const CreatePhoto = () => {
     }}>
       <h1>Welcome to photos app!</h1>
       <p>you can upload your photos and select your favorite one</p>
-      <label htmlFor="name">Name:
-        <input type="text" name='name' id="name" onChange={handleChange} />
+      <label>Name:
+        <input type="text" name='name' onChange={handleChange} />
       </label>
-      <label htmlFor="description">Description: 
+      <label>Description: 
         <textarea name='description' onChange={handleChange} />
       </label>
-      <label htmlFor="favorite">Favorite:
-        <select type="boolean" name='favorite' id="favorite" onChange={handleChange}>
-          <option value={true}>yes</option>
+      <label>Favorite:
+        <select type="boolean" name='favorite' onChange={handleChange}>
           <option value={false}>no</option>
+          <option value={true}>yes</option>
         </select>
       </label>
-      <label htmlFor="photo">
-        {/* implement size checker later  */}
-        <input required type="file" name='photo' id="photo" onChange={handleChange}/>
+      <label>
+        <input required type="file" name='photo' onChange={handleChange}/>
       </label>
       <button type="submit">Submit</button>
     </form>
