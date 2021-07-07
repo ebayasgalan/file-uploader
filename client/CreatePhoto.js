@@ -29,20 +29,17 @@ const CreatePhoto = () => {
     formData.append('name', name);
     formData.append('description', description);
     formData.append('favorite', favorite);
-    console.log('formData from CreatePhoto: ', formData);
     axios.post('/photo', formData)
       .then(res => navigate('/'))
       .catch(err => console.log(err));
   }
 
   return (
-    <>
     <form onSubmit={e => {
       e.preventDefault();
       fileUpload(e);
     }}>
-      <h1>Welcome to photos app!</h1>
-      <p>you can upload your photos and select your favorite one</p>
+      <h1>Create a new photo</h1>
       <label>Name:
         <input type="text" name='name' onChange={handleChange} />
       </label>
@@ -59,8 +56,8 @@ const CreatePhoto = () => {
         <input required type="file" name='photo' onChange={handleChange}/>
       </label>
       <button type="submit">Submit</button>
+      <button onClick={() => navigate('/')}>Cancel</button>
     </form>
-    </>
   )
 };
 

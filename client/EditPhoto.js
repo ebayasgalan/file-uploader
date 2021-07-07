@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import { navigate } from '@reach/router';
 
-const EditPhoto = ({pic, cancel}) => {
+const EditPhoto = ({pic}) => {
   const [name, setName] = useState(pic.name);
   const [photo, setPhoto] = useState(pic.url);
   const [description, setDescription] = useState('');
@@ -58,8 +58,8 @@ const EditPhoto = ({pic, cancel}) => {
         <input required type="file" name='photo' onChange={handleChange}/>
       </label>
       <button type="submit">Save</button>
+      <button onClick={() => navigate('/')}>Cancel</button>
     </form>
-      <button onClick={() => cancel()}>Cancel</button>
     </>
   )
 };

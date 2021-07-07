@@ -11,7 +11,6 @@ const App = () => {
   const fetchSingle = (id) => {
     axios.get(`/photo/${id}`)
       .then(({data}) => {
-        console.log('from single: ', data);
         setSingleData(data);
       })
       .catch(err => console.log(err));

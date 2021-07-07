@@ -13,7 +13,6 @@ const Photos = (props) => {
   const getAllPhotos = () => {
     axios.get('/photo')
       .then(({data}) => {
-        console.log('data: ', data);
         setPhotos(data);
       })
       .catch(err => console.log('err: ', err));
