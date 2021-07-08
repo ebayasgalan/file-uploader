@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const multers3 = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 const { Photo } = require('../Models/photo.js')
 const {uploadFile, getFileStream} = require('../s3');
@@ -37,7 +38,6 @@ const upload = multer({
   }});
 
 router.get('/', async (req, res, next) => {
-  const samplePhotos = ['https://hack-reactor-images.s3.us-west-1.amazonaws.com/people/person-0.jpg', '../uploads/image-1625338950195.png'];
   try {
     const photos = await Photo.find();
     res.status(200).send(photos);
@@ -47,13 +47,37 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get('/:key', async (req, res) => {
-  const { key } = req.params;
-  const readStream = getFileStream(key);
-  console.log('key: ', readStream);
-  // readStream.pipe(key);
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    res.send(readStream)
+    const photo = await Photo.findById(id);
+    res.status(200).send(photo)
+  } catch (err) {
+    console.log('err: ', err);
+  }
+});
+
+router.patch('/:id', upload.single('image'), async (req, res) => {
+  const { id } = req.params;
+  const updateObject = {
+    url: `uploads/${req.file.filename}`,
+    name: req.body.name,
+    description: req.body.description,
+    favorite: req.body.favorite,
+    updated_at: Date.now()
+  }
+  try {
+    // update database 
+    const photo = await Photo.findByIdAndUpdate(id, updateObject);
+    // delete from local disk 
+    const pathToFile = `public/${req.body.prevPicUrl}`;
+    fs.unlink(path.join(__dirname, '..', '..', pathToFile), (err, data) => {
+      if(err) console.log('error: ', err);
+      else {
+        console.log('updated to DB and deleted from local disk', data);
+      }
+    });
+    res.status(200).send('updated!');
   } catch (err) {
     console.log('err: ', err);
   }
@@ -69,9 +93,7 @@ router.post('/', upload.single('image'), async (req, res) => {
   })
   try {
     await newPhoto.save();
-    // const result = await uploadFile(file);
-    // console.log('result from upload request: ', result);
-    res.send('file saved to MongoDB');
+    res.status(201).send('file saved to MongoDB');
   } catch(err) {
     console.log('error: ', err);
   }
@@ -80,10 +102,19 @@ router.post('/', upload.single('image'), async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const {id} = req.params;
   try {
+    // delete from database 
     const deleted = await Photo.findByIdAndDelete(id);
+    // delete from local disk 
+    const pathToFile = `public/${deleted.url}`;
+    fs.unlink(path.join(__dirname, '..', '..', pathToFile), (err, data) => {
+      if(err) console.log('error: ', err);
+      else {
+        console.log('deleted from local disk');
+      }
+    });
     res.status(200).send('deleted!');
   } catch(err) {
-    console.log('err: ', err);
+    res.status(400).send(err);
   }
 })
 

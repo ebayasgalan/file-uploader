@@ -1,10 +1,14 @@
 import React from 'react';
+import {navigate} from '@reach/router';
 
-const Photo = ({url}) => {
+const Photo = ({photo, fetchSingle}) => {
   return(
-    <>
-    <img src={url} alt="a photo" />
-    </>
+    <span onClick={() => {
+      fetchSingle(photo._id);
+      navigate('single');
+    }}>
+      <img src={photo.url} alt="a photo" />
+    </span>
   )
 }
 

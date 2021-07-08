@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import {navigate} from '@reach/router';
+import { navigate } from '@reach/router';
 
-const CreatePhoto = () => {
-  const [name, setName] = useState('');
-  const [photo, setPhoto] = useState([]);
+const EditPhoto = ({pic}) => {
+  const [name, setName] = useState(pic.name);
+  const [photo, setPhoto] = useState(pic.url);
   const [description, setDescription] = useState('');
   const [favorite, setFavorite] = useState(false);
 
@@ -22,29 +22,31 @@ const CreatePhoto = () => {
     }
   }
 
-  function fileUpload(e){
-    let file = photo;
-    let formData = new FormData();
-    formData.append('image', file);
-    formData.append('name', name);
-    formData.append('description', description);
-    formData.append('favorite', favorite);
-    axios.post('/photo', formData)
-      .then(res => navigate('/'))
-      .catch(err => console.log(err));
+  const saveToDB = (id) => {
+      let file = photo;
+      let formData = new FormData();
+      formData.append('image', file);
+      formData.append('name', name);
+      formData.append('description', description);
+      formData.append('favorite', favorite);
+      formData.append('prevPicUrl', pic.url);
+      console.log('from saveToDB', formData);
+      axios.patch(`/photo/${id}`, formData)
+        .then(res => navigate('/'))
+        .catch(err => console.log(err)); 
   }
 
   return (
+    <>
     <form onSubmit={e => {
       e.preventDefault();
-      fileUpload(e);
+      saveToDB(pic._id);
     }}>
-      <h1>Create a new photo</h1>
-      <label>Name:
-        <input type="text" name='name' onChange={handleChange} />
-      </label>
+      <h1>Edit Photo</h1>
+      <label>Name:</label>
+        <input required type="text" name='name' onChange={handleChange} />
       <label>Description: 
-        <textarea name='description' onChange={handleChange} />
+        <textarea required name='description' onChange={handleChange} />
       </label>
       <label>Favorite:
         <select type="boolean" name='favorite' onChange={handleChange}>
@@ -55,10 +57,11 @@ const CreatePhoto = () => {
       <label>
         <input required type="file" name='photo' onChange={handleChange}/>
       </label>
-      <button type="submit">Submit</button>
+      <button type="submit">Save</button>
       <button onClick={() => navigate('/')}>Cancel</button>
     </form>
+    </>
   )
 };
 
-export default CreatePhoto;
+export default EditPhoto;

@@ -1,14 +1,42 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import {Link} from '@reach/router';
+import axios from 'axios';
+import { navigate } from '@reach/router';
+import EditPhoto from './EditPhoto';
 
-const Photo = ({url, name, decription, favorite}) => {
-  return(
+const SinglePhoto = ({pic}) => {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const cancelButtonHandler = () => {
+    setIsEditing(false);
+  }
+
+  const deletePhoto = (id) => {
+    axios.delete(`/photo/${id}`)
+      .then((res) => {
+        navigate('/');
+      })
+      .catch(err => {
+        console.log('err: ', err);
+      })
+  }
+
+  return( 
     <>
-    <h2>Name: {name}</h2>
-    <img src={url} alt="a photo" />
-    <p>{description}</p>
-    <p>{favorite}</p>
+    {isEditing ? <EditPhoto pic={pic} cancel={cancelButtonHandler} /> : (
+      <div>
+        <Link to="/">Back</Link>
+        <h2>Name: {pic.name}</h2>
+        <img src={pic.url} alt="a photo" />
+        <p>Description: {pic.description}</p>
+        <p>favorite: {pic.favorite.toString()}</p>
+        <button onClick={() => setIsEditing(true)}>Edit</button>
+        <button onClick={() => deletePhoto(pic._id)}>Delete</button>
+      </div>
+    )
+    }
     </>
   )
 }
 
-export default Photo;
+export default SinglePhoto;
