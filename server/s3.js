@@ -1,4 +1,4 @@
-const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const aws = require('aws-sdk');
 const fs = require('fs');
 
 const bucketName = process.env.AWS_BUCKET_NAME;
@@ -6,7 +6,7 @@ const accessKeyId = process.env.AWS_ACCESS_KEY;
 const secretAccessKey = process.env.AWS_SECRET_KEY;
 const region = process.env.AWS_BUCKET_REGION;
 
-const s3 = new S3Client({
+const s3 = new aws.S3({
   region,
   credentials: {
     accessKeyId,
@@ -40,5 +40,6 @@ function getFileStream(Key) {
 
 module.exports = {
   uploadFile,
-  getFileStream
+  getFileStream, 
+  s3
 }

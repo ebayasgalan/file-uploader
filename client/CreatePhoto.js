@@ -30,7 +30,7 @@ const CreatePhoto = () => {
     formData.append('description', description);
     formData.append('favorite', favorite);
     axios.post('/photo', formData)
-      .then(res => navigate('/'))
+      .then(res => console.log(res.data))
       .catch(err => console.log(err));
   }
 
