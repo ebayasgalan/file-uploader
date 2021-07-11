@@ -6,13 +6,15 @@ const path = require('path');
 const fs = require('fs');
 
 const { Photo } = require('../Models/photo.js')
-const {uploadFile, getFileStream, s3} = require('../s3');
+const {deleteFile, s3} = require('../s3');
 const bucket = process.env.AWS_BUCKET_NAME;
 
 // setup multer storage 
 const storage = multers3({
   s3,
   bucket,
+  contentType: multers3.AUTO_CONTENT_TYPE,
+  acl: 'public-read',
   metadata: function(req, file, cb) {
     cb(null, {fieldName: file.fieldname});
   },
@@ -50,7 +52,6 @@ router.get('/', async (req, res, next) => {
   try {
     const photos = await Photo.find();
     res.status(200).send(photos);
-    next()
   } catch(err) {
     res.status(400).send(err);
   }
@@ -66,52 +67,56 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.patch('/:id', upload.single('image'), async (req, res) => {
-  const { id } = req.params;
-  // const updateObject = {
-  //   url: `uploads/${req.file.filename}`,
-  //   name: req.body.name,
-  //   description: req.body.description,
-  //   favorite: req.body.favorite,
-  //   updated_at: Date.now()
-  // }
+router.patch('/:id/:key', upload.single('image'), async (req, res) => {
+  const { id, key } = req.params;
+  // delete old picture from s3 
+  await deleteFile(key, bucket);
+  // update database 
+  const updateObject = {
+    url: req.file.location,
+    name: req.body.name,
+    key: req.file.key,
+    description: req.body.description,
+    favorite: req.body.favorite,
+    updated_at: Date.now()
+  }
   try {
-    // update database 
     const photo = await Photo.findByIdAndUpdate(id, updateObject);
     res.status(200).send('updated!');
   } catch (err) {
-    console.log('err: ', err);
+    res.status(500).send(err);
   }
 });
 
 router.post('/', upload.single('image'), async (req, res) => {
-  // const file = req.file;
-  console.log('req.file: ', req.file);
-  console.log('req.body: ', req.body);
+  const file = req.file;
   // setup url for the database 
-  // const newPhoto = new Photo({
-  //   url: `uploads/${file.filename}`,
-  //   name: req.body.name,
-  //   description: req.body.description,
-  //   favorite: req.body.favorite
-  // })
+  const newPhoto = new Photo({
+    url: file.location,
+    key: file.key,
+    name: req.body.name,
+    description: req.body.description,
+    favorite: req.body.favorite
+  })
   try {
     // save to database 
-    // await newPhoto.save();
+    await newPhoto.save();
     res.status(201).send('from post request');
   } catch(err) {
-    console.log('error: ', err);
+    res.status(500).send(err);
   }
 });
 
-router.delete('/:id', async (req, res) => {
-  const {id} = req.params;
+router.delete('/:id/:key', async (req, res) => {
+  const {id, key} = req.params;
+  // delete from s3 
+  await deleteFile(key, bucket);
+  // delete from database 
   try {
-    // delete from database 
-    const deleted = await Photo.findByIdAndDelete(id);
+    await Photo.findByIdAndDelete(id);
     res.status(200).send('deleted!');
   } catch(err) {
-    res.status(400).send(err);
+    res.status(500).send(err);
   }
 })
 

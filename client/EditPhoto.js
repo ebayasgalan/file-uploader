@@ -22,7 +22,7 @@ const EditPhoto = ({pic}) => {
     }
   }
 
-  const saveToDB = (id) => {
+  const saveToDB = (id, key) => {
       let file = photo;
       let formData = new FormData();
       formData.append('image', file);
@@ -30,8 +30,7 @@ const EditPhoto = ({pic}) => {
       formData.append('description', description);
       formData.append('favorite', favorite);
       formData.append('prevPicUrl', pic.url);
-      console.log('from saveToDB', formData);
-      axios.patch(`/photo/${id}`, formData)
+      axios.patch(`/photo/${id}/${key}`, formData)
         .then(res => navigate('/'))
         .catch(err => console.log(err)); 
   }
@@ -40,7 +39,7 @@ const EditPhoto = ({pic}) => {
     <>
     <form onSubmit={e => {
       e.preventDefault();
-      saveToDB(pic._id);
+      saveToDB(pic._id, pic.key);
     }}>
       <h1>Edit Photo</h1>
       <label>Name:</label>

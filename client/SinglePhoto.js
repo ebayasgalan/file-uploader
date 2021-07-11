@@ -11,8 +11,8 @@ const SinglePhoto = ({pic}) => {
     setIsEditing(false);
   }
 
-  const deletePhoto = (id) => {
-    axios.delete(`/photo/${id}`)
+  const deletePhoto = (id, key) => {
+    axios.delete(`/photo/${id}/${key}`)
       .then((res) => {
         navigate('/');
       })
@@ -31,7 +31,7 @@ const SinglePhoto = ({pic}) => {
         <p>Description: {pic.description}</p>
         <p>favorite: {pic.favorite.toString()}</p>
         <button onClick={() => setIsEditing(true)}>Edit</button>
-        <button onClick={() => deletePhoto(pic._id)}>Delete</button>
+        <button onClick={() => deletePhoto(pic._id, pic.key)}>Delete</button>
       </div>
     )
     }

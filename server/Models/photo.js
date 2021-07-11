@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const PhotoSchema = new mongoose.Schema({
   url: String,
+  key: String,
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
   name: String,
