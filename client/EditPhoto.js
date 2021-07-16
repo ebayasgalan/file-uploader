@@ -1,6 +1,31 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
+import styled from 'styled-components';
 import { navigate } from '@reach/router';
+
+const StyledEditPhoto = styled.div`
+  display: flex;
+  justify-content: center;
+  form {
+    height: 400px;
+    width: 350px;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .buttons {
+    button {
+      :hover {
+        cursor: pointer;
+      }
+      font-size: 16px;
+      height: 30px;
+      margin-right: 15px;
+    }
+  }
+`;
 
 const EditPhoto = ({pic}) => {
   const [name, setName] = useState(pic.name);
@@ -36,30 +61,33 @@ const EditPhoto = ({pic}) => {
   }
 
   return (
-    <>
-    <form onSubmit={e => {
-      e.preventDefault();
-      saveToDB(pic._id, pic.key);
-    }}>
-      <h1>Edit Photo</h1>
-      <label>Name:</label>
-        <input required type="text" name='name' onChange={handleChange} />
-      <label>Description: 
-        <textarea required name='description' onChange={handleChange} />
-      </label>
-      <label>Favorite:
-        <select type="boolean" name='favorite' onChange={handleChange}>
-          <option value={false}>no</option>
-          <option value={true}>yes</option>
-        </select>
-      </label>
-      <label>
-        <input required type="file" name='photo' onChange={handleChange}/>
-      </label>
-      <button type="submit">Save</button>
-      <button onClick={() => navigate('/')}>Cancel</button>
-    </form>
-    </>
+    <StyledEditPhoto>
+      <form onSubmit={e => {
+        e.preventDefault();
+        saveToDB(pic._id, pic.key);
+      }}>
+        <h1>Edit Photo</h1>
+        <label>Name:
+          <input required type="text" name='name' onChange={handleChange} />
+        </label>
+        <label>Description: 
+          <textarea required name='description' onChange={handleChange} />
+        </label>
+        <label>Favorite:
+          <select type="boolean" name='favorite' onChange={handleChange}>
+            <option value={false}>no</option>
+            <option value={true}>yes</option>
+          </select>
+        </label>
+        <label>
+          <input required type="file" name='photo' onChange={handleChange}/>
+        </label>
+        <div className="buttons">
+          <button type="submit">Save</button>
+          <button onClick={() => navigate('/')}>Cancel</button>
+        </div>
+      </form>
+    </StyledEditPhoto>
   )
 };
 
