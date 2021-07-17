@@ -14,8 +14,8 @@ describe('SinglePhoto', () => {
   beforeEach(() => {
     wrapper = shallow(<SinglePhoto pic={samplePhoto} />);
   })
-  it('has a Edit button', () => {
-    expect(wrapper.find('button').at(0).text()).toEqual('Edit');
+  it('has a Back button', () => {
+    expect(wrapper.find('button').at(0).text()).toEqual('Back');
   })
   it('img tag points to randomURL', () => {
     expect(wrapper.find('img').props().src).toEqual("https://randomeURL");

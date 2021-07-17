@@ -11,9 +11,7 @@ describe('<PhotoItem />', () => {
   beforeEach(() => {
     wrapper = shallow(<PhotoItem photo={samplePhoto} />);
   })
-  it('has a span element', () => {
-    expect(wrapper.find('span').exists()).toEqual(true);
-  })
+  
   it('has a img element', () => {
     expect(wrapper.find('img').props().alt).toEqual('a photo');
   })
