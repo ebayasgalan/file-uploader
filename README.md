@@ -21,6 +21,7 @@
 | NodeJS       | Runtime environment for Javascript |
 | MongoDB      | Non-relational database            |
 | AWS-s3       | Cloud storage system               |
+| CircleCI     | Continuous integration tool        |
 
 
 ## Installation
